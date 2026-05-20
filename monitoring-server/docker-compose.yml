@@ -20,15 +20,15 @@ services:
     restart: unless-stopped
     environment:
       - GF_SECURITY_ADMIN_USER=gunas
-      - GF_SECURITY_ADMIN_PASSWORD=TheVida89123!
+      - GF_SECURITY_ADMIN_PASSWORD=password
       - GF_INSTALL_PLUGINS=grafana-piechart-panel
       - GF_SECURITY_ADMIN_USER=gunas
-      - GF_SECURITY_ADMIN_PASSWORD=TheVida89123!
+      - GF_SECURITY_ADMIN_PASSWORD=password
       - GF_INSTALL_PLUGINS=grafana-piechart-panel
       - GF_SMTP_ENABLED=true
       - GF_SMTP_HOST=smtp.hostinger.com:465
       - GF_SMTP_USER=monitoring@gunasgroup.com
-      - GF_SMTP_PASSWORD=TheVida89123!
+      - GF_SMTP_PASSWORD=password
       - GF_SMTP_SKIP_VERIFY=false
       - GF_SMTP_FROM_ADDRESS=monitoring@gunasgroup.com
       - GF_SMTP_FROM_NAME=Grafana Monitoring
