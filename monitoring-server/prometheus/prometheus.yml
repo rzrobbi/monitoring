@@ -1,0 +1,57 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+
+scrape_configs:
+  # Node Exporter (resource VM) untuk semua target
+  - job_name: 'node_exporter'
+    static_configs:
+      - targets:
+        - '192.168.110.14:9100'   # IP prod-apps-docker
+        - '192.168.110.15:9100'   # IP prod-sql-docker
+        - '192.168.110.16:9100'   # IP prod-fs-docker
+        - '192.168.110.17:9100'   # IP dev-apps-docker
+        - '192.168.110.18:9100'   # IP dev-fs-docker
+        - '192.168.110.19:9100'   # IP manage-docker
+        - '192.168.110.21:9100'   # IP monitoring-docker
+        - '192.168.110.28:9100'   # IP api-docker
+
+        labels:
+          service: 'vm_host'
+
+  # cAdvisor (monitoring container Docker) untuk semua target
+  #- job_name: 'cadvisor'
+  #  static_configs:
+  #    - targets:
+  #      - '192.168.110.14:8080'   # IP prod-apps-docker
+  #      - '192.168.110.15:8080'   # IP prod-sql-docker
+  #      - '192.168.110.16:8080'   # IP prod-fs-docker
+  #      - '192.168.110.17:8080'   # IP dev-apps-docker
+  #      - '192.168.110.18:8080'   # IP dev-fs-docker
+  #      - '192.168.110.19:8080'   # IP manage-docker
+  #      - '192.168.110.21:8080'   # IP monitoring-docker
+  #      - '192.168.110.22:8080'   # IP rnd-docker
+  #      labels:
+  #        service: 'docker_container'
+
+  # Blackbox Exporter untuk monitoring eksternal (HTTP/HTTPS)
+  #- job_name: 'blackbox_http'
+  #  metrics_path: /probe
+  #  params:
+  #    module: [http_2xx]
+  #  static_configs:
+  #    - targets:
+  #      - 'https://barcode.selago.co.id'
+  #      - 'https://dev-barcode.selago.co.id'
+  #      - 'https://ssg-hse.selago.co.id'
+  #      - 'https://hse-backend.selago.co.id'
+
+        # tambahkan website lain di baris baru
+#    relabel_configs:
+#      - source_labels: [__address__]
+#        target_label: __param_target
+#      - source_labels: [__param_target]
+#        target_label: instance
+#      - target_label: __address__
+#        replacement: blackbox_exporter:9115

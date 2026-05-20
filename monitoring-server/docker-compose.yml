@@ -1,0 +1,114 @@
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - /mnt/synology/monitoring/prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=gunas
+      - GF_SECURITY_ADMIN_PASSWORD=TheVida89123!
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+      - GF_SECURITY_ADMIN_USER=gunas
+      - GF_SECURITY_ADMIN_PASSWORD=TheVida89123!
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+      - GF_SMTP_ENABLED=true
+      - GF_SMTP_HOST=smtp.hostinger.com:465
+      - GF_SMTP_USER=monitoring@gunasgroup.com
+      - GF_SMTP_PASSWORD=TheVida89123!
+      - GF_SMTP_SKIP_VERIFY=false
+      - GF_SMTP_FROM_ADDRESS=monitoring@gunasgroup.com
+      - GF_SMTP_FROM_NAME=Grafana Monitoring
+    volumes:
+      - /mnt/synology/monitoring/grafana-data:/var/lib/grafana
+      #- ./grafana-data/grafana.ini:/etc/grafana/grafana.ini:ro   # <-- mount dari dalam grafana-data
+    ports:
+      - "3000:3000"
+    networks:
+      - monitoring
+
+  node_exporter:
+    image: prom/node-exporter:latest
+    container_name: node_exporter
+    restart: unless-stopped
+    network_mode: host
+    pid: host
+    volumes:
+      - /:/host:ro,rslave
+    command:
+      - '--path.rootfs=/host'
+      #- '--no-collector.kernel_hung'   # Baris ini menonaktifkan collector
+
+  #cadvisor:
+  #  image: gcr.io/cadvisor/cadvisor:latest
+  #  container_name: cadvisor
+  #  restart: unless-stopped
+  #  ports:
+  #    - "8080:8080"
+  #  volumes:
+  #    - /:/rootfs:ro
+  #    - /var/run:/var/run:ro
+  #    - /sys:/sys:ro
+  #    - /var/lib/docker/:/var/lib/docker:ro
+  #    - /dev/disk/:/dev/disk:ro
+  #  privileged: true
+  #  devices:
+  #    - /dev/kmsg
+  #  networks:
+  #    - monitoring
+
+  loki:
+    image: grafana/loki:2.9.4
+    container_name: loki
+    restart: unless-stopped
+    user: root
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki-config.yaml:/etc/loki/loki-config.yaml:ro
+      - /mnt/synology/monitoring/loki-data:/loki
+    command: -config.file=/etc/loki/loki-config.yaml
+    networks:
+      - monitoring
+
+ #  blackbox_exporter:
+ #    image: prom/blackbox-exporter:latest
+ #    container_name: blackbox_exporter
+ #    restart: unless-stopped
+ #    ports:
+ #      - "9115:9115"
+ #    volumes:
+ #      - ./blackbox.yml:/etc/blackbox_exporter/blackbox.yml:ro
+ #    command:
+ #      - '--config.file=/etc/blackbox_exporter/blackbox.yml'
+ #    networks:
+ #      - monitoring
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./promtail-config.yaml:/etc/promtail/promtail-config.yaml:ro
+    command: -config.file=/etc/promtail/promtail-config.yaml
+
+networks:
+  monitoring:
+    driver: bridge

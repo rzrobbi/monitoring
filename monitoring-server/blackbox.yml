@@ -1,0 +1,25 @@
+modules:
+  # Module untuk mengecek ketersediaan HTTP/HTTPS (mencari response 2xx)
+  http_2xx:
+    prober: http
+    timeout: 5s
+    http:
+      valid_status_codes: [200, 301, 302]
+      method: GET
+      no_follow_redirects: false
+
+  # Module untuk mengecek SSL Certificate dan ketersediaan (mencari response 2xx)
+  https_2xx:
+    prober: http
+    timeout: 5s
+    http:
+      valid_status_codes: [200, 301, 302]
+      method: GET
+      no_follow_redirects: false
+      fail_if_ssl: false
+      fail_if_not_ssl: true
+
+  # Module untuk mengecek koneksi TCP ke sebuah port
+  tcp_connect:
+    prober: tcp
+    timeout: 5s
