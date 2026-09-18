@@ -10,6 +10,18 @@ services:
     command:
       - '--path.rootfs=/host'
       #- '--no-collector.kernel_hung'
+  
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./promtail-config.yaml:/etc/promtail/promtail-config.yaml:ro
+    command: -config.file=/etc/promtail/promtail-config.yaml
 
 #  cadvisor:
 #    image: gcr.io/cadvisor/cadvisor:latest
